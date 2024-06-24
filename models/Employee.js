@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const EmployeeSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: true,
     },
     color: {
         type: String,
-        default: function() {
-            // Function to generate a random hex color
-            return '#' + Math.floor(Math.random()*16777215).toString(16);
+        default: function () {
+            return '#' + (Math.floor(Math.random() * 16777215).toString(16)).padStart(6, '0');
         }
     },
     busy: [{
@@ -20,6 +19,29 @@ const EmployeeSchema = new mongoose.Schema({
             type: Date,
         }
     }]
+});
+
+EmployeeSchema.pre('save', async function (next) {
+    try {
+        if (!this.name) {
+            const lastNewUser = await this.constructor.findOne({
+                name: /^New User \d+$/
+            }).sort({ name: -1 });
+
+            let newUserNumber = 1;
+            if (lastNewUser) {
+                const lastNumber = parseInt(lastNewUser.name.replace('New User ', ''));
+                if (!isNaN(lastNumber)) {
+                    newUserNumber = lastNumber + 1;
+                }
+            }
+
+            this.name = `New User ${newUserNumber}`;
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
 });
 
 const Employee = mongoose.model('Employees', EmployeeSchema);
