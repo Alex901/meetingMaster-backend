@@ -8,7 +8,7 @@ router.post('/addEmployee', async (req, res) => {
     try {
         const employeeData = req.body;
         const newEmployee = new Employee(employeeData);
-        await newEmployee.save(); 
+        await newEmployee.save();
         res.status(201).json({ message: 'Employee added successfully', newEmployee });
     } catch (error) {
         res.status(400).json({ message: 'Error adding employee', error: error.message });
@@ -27,6 +27,15 @@ router.delete('/delete/:id', async (req, res) => {
         res.status(200).json({ message: 'Employee deleted successfully' });
     } catch (error) {
         res.status(500).json({ message: 'Error deleting employee', error: error.message });
+    }
+});
+
+router.get('/getEmployees', async (req, res) => {
+    try {
+        const employees = await Employee.find({});
+        res.status(200).json({ employees });
+    } catch (error) {
+        res.status(500).json({ message: 'Failed to fetch employees', error: error.message });
     }
 });
 
