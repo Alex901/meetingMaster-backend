@@ -39,5 +39,25 @@ router.get('/getEmployees', async (req, res) => {
     }
 });
 
+router.post('/:_id/set-busy', async (req, res) => {
+    const { _id } = req.params;
+    const { busyTimes } = req.body;
+
+    try {
+        const employee = await Employee.findById(_id);
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+
+        employee.busy = [...employee.busy, ...busyTimes]; 
+
+        await employee.save(); 
+
+        res.status(200).json({ message: 'Busy times added successfully', employee });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating employee busy times', error: error.message });
+    }
+});
+
 
 module.exports = router;
