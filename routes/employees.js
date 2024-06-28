@@ -5,7 +5,12 @@ const router = express.Router();
 
 router.post('/addEmployee', async (req, res) => {
     try {
+        // Check if employee with this ID already exists
         const employeeData = req.body;
+        const existingEmployee = await Employee.findById(employeeData._id);
+        if (existingEmployee) {
+            return res.status(409).json({ message: 'Employee with this ID already exists' });
+        }
         const newEmployee = new Employee(employeeData);
         await newEmployee.save();
         res.status(201).json({ message: 'Employee added successfully', newEmployee });
