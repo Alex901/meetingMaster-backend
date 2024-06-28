@@ -4,7 +4,6 @@ const Employee = require('../models/Employee');
 const router = express.Router();
 
 router.post('/addEmployee', async (req, res) => {
-    console.log("request recieved", req.body);
     try {
         const employeeData = req.body;
         const newEmployee = new Employee(employeeData);
@@ -56,6 +55,30 @@ router.post('/:_id/set-busy', async (req, res) => {
         res.status(200).json({ message: 'Busy times added successfully', employee });
     } catch (error) {
         res.status(500).json({ message: 'Error updating employee busy times', error: error.message });
+    }
+});
+
+router.put('/:_id/rename', async (req, res) => {
+    console.log('DEBUG: Request recieved to rename employee');
+    const { _id } = req.params;
+    const { newName } = req.body;
+
+    if (!newName) {
+        return res.status(400).json({ message: 'New name is required' });
+    }
+
+    try {
+        const employee = await Employee.findById(_id);
+        if (!employee) {
+            return res.status(404).json({ message: 'Employee not found' });
+        }
+
+        employee.name = newName; 
+        await employee.save();
+
+        res.status(200).json({ message: 'Employee name updated successfully', employee });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating employee name', error: error.message });
     }
 });
 
