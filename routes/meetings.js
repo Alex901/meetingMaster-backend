@@ -42,9 +42,7 @@ router.delete('/delete/:meetingId', async (req, res) => {
         }
         await Meeting.findByIdAndDelete(meetingId);
 
-        const meetingEndTime = new Date(meetingToDelete.startTime.getTime() + meetingToDelete.duration*60000);
-        console.log('DEBUG: Meeting end time:', meetingEndTime, typeof meetingEndTime);
-        console.log('DEBUG: Meeting start time:', meetingToDelete.startTime, typeof meetingToDelete.startTime);
+        const meetingEndTime = new Date(meetingToDelete.startTime.getTime() + meetingToDelete.duration * 60000);
 
         const attendantUpdates = meetingToDelete.attendants.map(attendant => {
             return Employee.findByIdAndUpdate(attendant._id, {
@@ -58,10 +56,11 @@ router.delete('/delete/:meetingId', async (req, res) => {
         });
 
         await Promise.all(attendantUpdates);
-        res.status(200).json({ message: 'Meeting deleted successfully' });
+        console.log('DEBUG: Attendants updated successfully');
+        return res.status(200).send({ message: 'Meeting deleted successfully' });
     } catch (error) {
-        console.error('Error deleting meeting:', error);
-        res.status(500).json({ message: 'Error deleting meeting', error: error.message });
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Error processing your request', error: error.message });
     }
 });
 
@@ -73,7 +72,7 @@ async function updateAllAttendants(meetingData) {
 
         await Promise.all(meetingData.attendants.map(async (_id) => {
             return Employee.findByIdAndUpdate(_id, {
-                $push: { busy: { start: startTime, end: endTime } } 
+                $push: { busy: { start: startTime, end: endTime } }
             }, { new: true }).then(updatedEmployee => {
                 if (!updatedEmployee) {
                     console.log('Employee not found or update failed');
