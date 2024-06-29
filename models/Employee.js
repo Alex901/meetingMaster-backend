@@ -2,6 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const EmployeeSchema = new mongoose.Schema({
+    legacyId: { 
+        type: String 
+    },
     name: {
         type: String,
     },
@@ -43,6 +46,11 @@ EmployeeSchema.pre('save', async function (next) {
         next(error);
     }
 });
+
+EmployeeSchema.methods.addBusyTime = function(startTime, endTime) {
+    this.busy.push({ start: startTime, end: endTime });
+    // Note: You might want to call this.save() here or outside this method depending on your use case
+};
 
 const Employee = mongoose.model('Employees', EmployeeSchema);
 
