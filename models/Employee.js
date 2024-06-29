@@ -23,23 +23,25 @@ const EmployeeSchema = new mongoose.Schema({
         }
     }]
 });
-
+// Give a name to employees that are created without one
 EmployeeSchema.pre('save', async function (next) {
     try {
         if (!this.name) {
-            const lastNewUser = await this.constructor.findOne({
-                name: /^New User \d+$/
-            }).sort({ name: -1 });
+            const users = await this.constructor.find({
+                name: /^NE\d+$/
+            });
 
-            let newUserNumber = 1;
-            if (lastNewUser) {
-                const lastNumber = parseInt(lastNewUser.name.replace('New User ', ''));
-                if (!isNaN(lastNumber)) {
-                    newUserNumber = lastNumber + 1;
+            // Extract numbers, sort them, and find the smallest missing number
+            const numbers = users.map(user => parseInt(user.name.replace('NE', ''), 10)).sort((a, b) => a - b);
+            let newUserNumber = 1; // Start from 1
+            for (let i = 0; i < numbers.length; i++) {
+                if (numbers[i] > newUserNumber) {
+                    break; // Found a gap
                 }
+                newUserNumber = numbers[i] + 1; // No gap, move to the next number
             }
 
-            this.name = `New User ${newUserNumber}`;
+            this.name = `NE${newUserNumber}`;
         }
         next();
     } catch (error) {
