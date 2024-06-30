@@ -32,7 +32,7 @@ EmployeeSchema.pre('save', async function (next) {
             });
 
             // Extract numbers, sort them, and find the smallest missing number
-            const numbers = users.map(user => parseInt(user.name.replace('NE', ''), 10)).sort((a, b) => a - b);
+            const numbers = users.map(user => parseInt(user.name.replace('NewEmployee', ''), 10)).sort((a, b) => a - b);
             let newUserNumber = 1; // Start from 1
             for (let i = 0; i < numbers.length; i++) {
                 if (numbers[i] > newUserNumber) {
@@ -41,7 +41,7 @@ EmployeeSchema.pre('save', async function (next) {
                 newUserNumber = numbers[i] + 1; // No gap, move to the next number
             }
 
-            this.name = `NE${newUserNumber}`;
+            this.name = `NewEmployee${newUserNumber}`;
         }
         next();
     } catch (error) {
