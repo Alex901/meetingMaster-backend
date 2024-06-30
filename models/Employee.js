@@ -28,7 +28,7 @@ EmployeeSchema.pre('save', async function (next) {
     try {
         if (!this.name) {
             const users = await this.constructor.find({
-                name: /^NE\d+$/
+                name: /^NewEmployee\d+$/
             });
 
             // Extract numbers, sort them, and find the smallest missing number
