@@ -28,20 +28,19 @@ EmployeeSchema.pre('save', async function (next) {
     try {
         if (!this.name) {
             const users = await this.constructor.find({
-                name: /^NewEmployee\d+$/
+                name: /^NewEmployee \d+$/
             });
 
-            // Extract numbers, sort them, and find the smallest missing number
-            const numbers = users.map(user => parseInt(user.name.replace('NewEmployee', ''), 10)).sort((a, b) => a - b);
-            let newUserNumber = 1; // Start from 1
+            const numbers = users.map(user => parseInt(user.name.replace('NewEmployee ', ''), 10)).sort((a, b) => a - b);
+            let newUserNumber = 1;
             for (let i = 0; i < numbers.length; i++) {
                 if (numbers[i] > newUserNumber) {
                     break; // Found a gap
                 }
-                newUserNumber = numbers[i] + 1; // No gap, move to the next number
+                newUserNumber = numbers[i] + 1;
             }
 
-            this.name = `NewEmployee${newUserNumber}`;
+            this.name = `NewEmployee ${newUserNumber}`;
         }
         next();
     } catch (error) {
