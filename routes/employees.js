@@ -15,7 +15,7 @@ router.post('/addEmployee', async (req, res) => {
         }
         const newEmployee = new Employee(employeeData);
         await newEmployee.save();
-        res.status(201).json({ message: 'Employee added successfully', newEmployee });
+        res.status(200).json({ message: 'Employee added successfully', newEmployee });
     } catch (error) {
         res.status(400).json({ message: 'Error adding employee', error: error.message });
     }
@@ -130,7 +130,7 @@ router.post('/upload', upload.single('file'), async (req, res) => {
                     // Create employee if not exists, using legacyId
                     employee = new Employee({ legacyId: legacyId });
                 }
-                // Assuming you have a method to add busy time in your Employee model
+                // Adding busy time to employee's schedule
                 const startTime = new Date(parts[1]);
                 const endTime = new Date(parts[2]);
                 if (!employee.busy) {
@@ -141,15 +141,13 @@ router.post('/upload', upload.single('file'), async (req, res) => {
                 // Handle employee name entry
                 const name = parts[1].trim();
                 if (!employee) {
-                    // Create employee if not exists, using legacyId and name
+                    // Create employee if it does not exists, using legacyId and name
                     employee = new Employee({ legacyId: legacyId, name: name });
                 } else {
                     // Update name of existing employee
                     employee.name = name;
                 }
             }
-
-            // Save or update employee in the database
             await employee.save();
         }
 
