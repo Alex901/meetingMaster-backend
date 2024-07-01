@@ -8,14 +8,14 @@ This is the backend for the project https://github.com/Alex901/meetingMaster-app
 Step-by-step instructions on how to get a development environment running. First of all, you need to have your own mongoDB server to run this locally. If you have that, you can either create your own .env and add: 
 
 ```bash
-DATABASE_URI=<Your _connection_string>
+DATABASE_URI=<Your <connection_string>
 ```
 
 Or, simply go int db.js and add it there: 
 
 ```bash
- await mongoose.connect(process.env.DATABASE_URI, {
-            dbName: 'MeetingMaster',
+ await mongoose.connect(<your_connection_sting>, {
+            dbName: '<your database name>',
         });
 ```
 
